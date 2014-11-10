@@ -1,0 +1,3 @@
+recursive-include pygenerich *.py
+recursive-include pygenerich/wrappers *.py
+recursive-include pygenerich/data *.gmt
