@@ -5,7 +5,7 @@
 Clone this repository and then:
 
 ```bash
-$ cd pygprofile/
+$ cd PyGProfile/
 $ python setup.py install --user
 ```
 
