@@ -28,22 +28,16 @@ def read_input(ifile):
 			genes[word[0]] = line
 	return genes, header
 
-def annotate_ensembl(dict_obj, species):
+def annotate_ensembl(dict_obj):
 	#Genes must be the keys
 	ens = importr("biomaRt")
 	ensembl = ro.r.useMart("ensembl")
-	if species == "mm10":
-		genome="mmusculus_gene_ensembl"
-	elif species == "hg19":
-		genome="hsapiens_gene_ensembl"
+	genome="mmusculus_gene_ensembl"
 	ensembl = ro.r.useDataset(genome, mart=ensembl)
 	values = []
 	for key1 in dict_obj:
 		values.append(key1)
-	if species == "mm10":
-		C1BM = ro.r.getBM(attributes=StrVector(["ensembl_gene_id", "mgi_id"]), filters="ensembl_gene_id", values=values, mart=ensembl)
-	elif species == "hg19":
-		C1BM = ro.r.getBM(attributes=StrVector(["ensembl_gene_id", "entrezgene"]), filters="ensembl_gene_id", values=values, mart=ensembl)
+	C1BM = ro.r.getBM(attributes=StrVector(["ensembl_gene_id", "mgi_id"]), filters="ensembl_gene_id", values=values, mart=ensembl)
 	gene = list(C1BM.rx(True,1))
 	ent = list(C1BM.rx(True,2))
 	data = {}
@@ -51,30 +45,16 @@ def annotate_ensembl(dict_obj, species):
 		data[g] = ent[index]
 	return data
 
-def read_gene_anno(ifile, species):
-	g_anno = {}
+def read_gene_anno(ifile):
+	g_anno = defaultdict(list)
 	with open(ifile) as f:
 		for line in f:
 			line = line.rstrip()
 			word = line.split("\t")
-			mgi = word[4].strip()
-			if len(word) > 5:
-				#print word[4]
-				ids = word[5].strip()
-				ids = ids.split(" ")
-				if species == "mm10":
-					#Not sure what IDs these are!
-					g_anno[mgi] = ids
-				elif species == "hg19":
-					#This is an entrezgene id
-					g_anno[word[2]] = ids
-			else:
-				if species == "mm10":
-					#Not sure what IDs these are!
-					g_anno[mgi] = "No Phenotype"
-				elif species == "hg19":
-					#This is an entrezgene id
-					g_anno[word[2]] = "No Phenotype"
+			mgi = word[5].strip()
+			mgis = mgi.split(",")
+			for m in mgis:
+				g_anno[m].append(word[3])
 	return g_anno
 
 
@@ -121,15 +101,14 @@ def combine_everything(data, gene_dict, g_anno, p_anno, outfile, header):
 def main():
 	parser = argparse.ArgumentParser(description='Annotation of gene lists to phenotypic descriptors\n')
 	parser.add_argument('-i','--input', help='Input file in tab delimiated format containing ensembl IDs on the first column. Assumes a header is present.', required=True)
-	parser.add_argument('-g','--genome', help='Genome, options are mm10/hg19', required=True)
 	parser.add_argument('-o','--outfile', help='Output file', required=True)
 	args = vars(parser.parse_args())
 
-	gene_ids = pkg_resources.resource_filename('pygprofile', 'data/HMD_HumanPhenotype.rpt')
+	gene_ids = pkg_resources.resource_filename('pygprofile', 'data/MGI_PhenoGenoMP.rpt')
 	pheno_ids = pkg_resources.resource_filename('pygprofile', 'data/VOC_MammalianPhenotype.rpt')
 
 	gene_list, header = read_input(args["input"])
-	converted_genes = annotate_ensembl(gene_list, args["genome"])
-	gene_anno = read_gene_anno(gene_ids, args["genome"])
+	converted_genes = annotate_ensembl(gene_list)
+	gene_anno = read_gene_anno(gene_ids)
 	pheno_anno = read_pheno_anno(pheno_ids)
 	combine_everything(gene_list, converted_genes, gene_anno, pheno_anno, args["outfile"], header)
