@@ -3,4 +3,6 @@
 -	Mouse KEGG annotation for pathways to entrezgene ID's. 
 
 -	Phenotypic annotation downloaded from ftp://ftp.informatics.jax.org/pub/reports/index.html#pheno on 10/11/14
-	These include the human and mouse annotation of the genes to phenotypic IDs and then VOC contains the annotation of these IDs. 
+	These include the human and mouse annotation of the genes to phenotypic IDs and then VOC contains the annotation of these IDs.
+
+-	List of mouse TF's downloaded from http://www.bioguo.org/AnimalTFDB/download_index.php?spe=Mus%20musculus on 8/11/14. 

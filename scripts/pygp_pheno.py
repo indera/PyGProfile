@@ -8,5 +8,5 @@
 # All right reserved.
 ########################################################################
 
-import pygprofile.go_analysis
-pygprofile.go_analysis.main()
+import pygprofile.phenotypic_annotation
+pygprofile.phenotypic_annotation.main()

@@ -8,5 +8,5 @@
 # All right reserved.
 ########################################################################
 
-import pygenerich.pathway_analysis
-pygenerich.pathway_analysis.main()
+import pygprofile.pathway_analysis
+pygprofile.pathway_analysis.main()

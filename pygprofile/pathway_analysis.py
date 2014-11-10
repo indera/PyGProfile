@@ -92,7 +92,7 @@ def main():
 	args = vars(parser.parse_args())
 	
 	path = os.path.dirname(gene_enrichment_toolkit.__file__)
-	kegg_info = pkg_resources.resource_filename('pygenerich', 'data/mouse_kegg.gmt')
+	kegg_info = pkg_resources.resource_filename('pygprofile', 'data/mouse_kegg.gmt')
 	if args["spia"]:
 		if args["input"]:
 			gene_vals = read_input_file(args["input"], lfc=True)

@@ -8,5 +8,5 @@
 # All right reserved.
 ########################################################################
 
-import pygprofile.go_analysis
-pygprofile.go_analysis.main()
+import pygprofile.select_tfs
+pygprofile.select_tfs.main()
