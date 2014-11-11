@@ -16,7 +16,7 @@ import pkg_resources
 import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.robjects.vectors import IntVector, FloatVector, StrVector
-
+from collections import defaultdict
 def read_input(ifile):
 	genes = {}
 	with open(ifile) as f:
@@ -79,24 +79,30 @@ def combine_everything(data, gene_dict, g_anno, p_anno, outfile, header):
 		output.write("{}\t".format(data[gene])),
 		if gene in gene_dict:
 			if gene_dict[gene] in g_anno: #Now have all pheno_ids
-				c = 0
+				total_pheno = []
 				for pheno_id in g_anno[gene_dict[gene]]:	
 					if pheno_id in p_anno:
-						if c == 0:
-							output.write("{}".format(p_anno[pheno_id])),
-						else:
-							output.write(",{}".format(p_anno[pheno_id])),
-						#m = re.search("lethality", p_anno[pheno_id])
-						#m2 = re.search("postnatal", p_anno[pheno_id])
+						total_pheno.append(p_anno[pheno_id])
 					else:
-						if c == 0:
-							output.write("No phenotype for gene"),
+						total_pheno.append("Other phenotype")
+				total_pheno = f7(total_pheno)
+				c = 0
+				for phen in sorted(total_pheno):
+					if c == 0:
+						output.write("{}".format(phen)),
+					else:
+						output.write(", {}".format(phen)),
 					c += 1
 			else:
 				output.write("Not found in phenotype database"),
 		else:
 			output.write("No MGI ID for gene"),
 		output.write("\n"),
+
+def f7(seq):
+	seen = set()
+	seen_add = seen.add
+	return [ x for x in seq if not (x in seen or seen_add(x))]
 
 def main():
 	parser = argparse.ArgumentParser(description='Annotation of gene lists to phenotypic descriptors\n')
