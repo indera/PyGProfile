@@ -88,12 +88,12 @@ def filter_genes_by_go(ifile, go_to_search, out):
 	ensembl = ro.r.useDataset(genome, mart=ensembl)
 	filter1 = "ensembl_gene_id"
 	with open(ifile) as f:
-#		header = next(f)
-#		print header,
+		header = next(f)
 		for line in f:
 			line = line.rstrip()
 			word = line.split("\t")
-			data[word[0]] = line
+			name = word[0].strip()
+			data[name] = line
 	values = []
 	for key in data:
 		values.append(key)
@@ -107,8 +107,10 @@ def filter_genes_by_go(ifile, go_to_search, out):
 	for x in range(0, len(genes)):
 		go_ids[genes[x]] = (gos[x], ext[x])
 	output = open(out, "w")
+	output.write(header),
 	for key in go_ids:
-		output.write("{}\t{}\t{}\n".format(data[key], go_ids[key][0], go_ids[key][1])),
+		line = data.get(key, "NA")
+		output.write("{}\t{}\t{}\n".format(line, go_ids[key][0], go_ids[key][1])),
 	output.close()
 
 def main():
@@ -165,3 +167,4 @@ def main():
 					goprofiles.goprofiles(gene_vals, args["pval"], args["outname"])
 	elif args["subparser_name"] == "search":
 		filter_genes_by_go(args["input"], args["go"], args["output"])
+
